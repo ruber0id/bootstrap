@@ -347,6 +347,11 @@
             - /proc:/host/proc:ro
             - /sys:/host/sys:ro
             - /var/run/docker.sock:/var/run/docker.sock
+      vars:  
+        container_lbls:
+          "caddy.address": "netdata.{{_domain}}"
+          "caddy.targetport": "{{ports.netdata.1}}"
+        service: netdata    
 
       # - name: Netdata role execution
       #   include_role:
