@@ -46,8 +46,8 @@
       - name: Checking server total mem
         assert:
           that:
-            - ansible_memtotal_mb >= 3000
-          msg: "Required mem >= 3GB"
+            - ansible_memtotal_mb >= 1000
+          msg: "Required mem >= 1GB"
 
       - debug: var=msg
             
