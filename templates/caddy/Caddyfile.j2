@@ -45,6 +45,11 @@
     root /wwwroot
     log stdout
     errors stdout
+    realip cloudflare
+    expires {
+        js files after 1y
+    }
+
 #    cors / {
 #        allow_credentials true
 #        max_age 3600
