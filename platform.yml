@@ -42,22 +42,22 @@
 
 
       ##### ##### ##### ##### #####    Checking system reqs    ##### ##### ##### ##### ##### 
-    - block:
-      - name: Checking server total mem
-        assert:
-          that:
-            - ansible_memtotal_mb >= 1000
-          msg: "Required mem >= 1GB"
+    # - block:
+    #   - name: Checking server total mem
+    #     assert:
+    #       that:
+    #         - ansible_memtotal_mb >= 1000
+    #       msg: "Required mem >= 1GB"
 
-      - debug: var=msg
+    #   - debug: var=msg
             
-      vars:
-        msg:
-          memtotal_mb: "{{ansible_memtotal_mb}}"
-          clickhouse_memory_limit: "{{mem_limit_clickhouse}}"
-          redis_memory_limit: "{{mem_limit_redis}}"
-          jupyter_memory_limit: "{{mem_limit_jupyter}}"
-      tags: ['always']
+    #   vars:
+    #     msg:
+    #       memtotal_mb: "{{ansible_memtotal_mb}}"
+    #       clickhouse_memory_limit: "{{mem_limit_clickhouse}}"
+    #       redis_memory_limit: "{{mem_limit_redis}}"
+    #       jupyter_memory_limit: "{{mem_limit_jupyter}}"
+    #   tags: ['always']
 
       ##### ##### ##### ##### #####    Server configuration    ##### ##### ##### ##### ##### 
       
