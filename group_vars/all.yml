@@ -59,7 +59,7 @@ repos:
 _images:
   band: "rockstat/band-base-py:{{ (branch == 'master')|ternary('3.7', '3.7-' + branch) }}"
   director: "rockstat/director:{{_tag}}"
-  caddy: "abiosoft/caddy"
+  caddy: "rockstat/caddy"
   front: "rockstat/front:{{_tag}}"
   chwriter: "rockstat/chwriter:{{_tag}}"
   ebaloger: rockstat/ebaloger
