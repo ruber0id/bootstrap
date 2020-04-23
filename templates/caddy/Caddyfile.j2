@@ -46,8 +46,9 @@
     log stdout
     errors stdout
     realip cloudflare
+
     expires {
-        js files after 1y
+        match .js$ 1d
     }
 
 #    cors / {
@@ -64,6 +65,8 @@
     }
 
     header / {
+        -Pragma
+        -Cache-Control
         X-Content-Type-Options nosniff
     }
     proxy /wss http://{{tmpl.ws_to}} {
