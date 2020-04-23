@@ -65,8 +65,6 @@
     }
 
     header / {
-        -Pragma
-        -Cache-Control
         X-Content-Type-Options nosniff
     }
     proxy /wss http://{{tmpl.ws_to}} {
