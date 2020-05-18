@@ -10,7 +10,7 @@
           realname: "{{_fullname}}"
           domain: "{{_domain}}"
           admin_password: "{{_admin_password}}"
-          enable_support: "{{_enable_support}}"
+          enable_support: "{{ not _enable_support}}"
           ssl_wildcard: "{{_ssl_wildcard}}"
       tags: ['never']
 
