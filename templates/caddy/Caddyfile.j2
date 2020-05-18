@@ -40,16 +40,17 @@
 }
 
 
-{{ tmpl.domain }} {% for d in tmpl.extra_domains %}, {{d}}{% endfor %} {
-    import cert
+http://, https:// {
+#    import cert
     root /wwwroot
     log stdout
     errors stdout
+    encode zstd gzip
     realip cloudflare 0.0.0.0/0
 
-#    expires {
-#        match .js$ 1d
-#    }
+    expires {
+        match .js$ 2h
+    }
 
 #    cors / {
 #        allow_credentials true
@@ -65,6 +66,7 @@
     }
 
     header / {
+        Cache-Control "public, max-age=7200"
         X-Content-Type-Options nosniff
     }
     proxy /wss http://{{tmpl.ws_to}} {
@@ -74,7 +76,7 @@
 }
 
 
-app.{{tmpl.domain}} {
+app-eu.{{tmpl.domain}} {
     import cert
     import login
     import back

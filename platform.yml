@@ -378,65 +378,65 @@
 
 
 
-    - block:
-      - name: Disabling clickhouse systemd service
-        systemd:
-          name: clickhouse-server
-          state: stopped
-          enabled: no
-          masked: yes
-        failed_when: False
-        when: ansible_service_mgr == 'systemd'
+    # - block:
+    #   - name: Disabling clickhouse systemd service
+    #     systemd:
+    #       name: clickhouse-server
+    #       state: stopped
+    #       enabled: no
+    #       masked: yes
+    #     failed_when: False
+    #     when: ansible_service_mgr == 'systemd'
 
-      - name: Copy default clickhouse migrations
-        copy:
-          src: "clickhouse_scripts/"
-          dest: "{{dirs.clickhouse_scripts}}"
-          owner: "{{_uid}}"
-          group: "{{_gid}}"
-          mode: "0644"
+    #   - name: Copy default clickhouse migrations
+    #     copy:
+    #       src: "clickhouse_scripts/"
+    #       dest: "{{dirs.clickhouse_scripts}}"
+    #       owner: "{{_uid}}"
+    #       group: "{{_gid}}"
+    #       mode: "0644"
 
-      - name: Copying custom configs
-        copy:
-          src: templates/clickhouse/config.d/
-          dest: "{{dirs.clickhouse_config}}"
-          owner: "{{_uid}}"
-          group: "{{_gid}}"
-          mode: "0644"
+    #   - name: Copying custom configs
+    #     copy:
+    #       src: templates/clickhouse/config.d/
+    #       dest: "{{dirs.clickhouse_config}}"
+    #       owner: "{{_uid}}"
+    #       group: "{{_gid}}"
+    #       mode: "0644"
 
-      - name: Starting ClickHouse container
-        docker_container:
-          name: clickhouse
-          hostname: clickhouse
-          image: "{{images.clickhouse}}"
-          # labels: "{{docker_band_lbls}}"
-          purge_networks: yes
-          networks_cli_compatible: no
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          ulimits:
-            - "nofile:262144:262144"
-          memory: "{{ mem_limit_clickhouse|default('2g') }}"
-          # restart: yes
-          # pull: yes
-          # recreate: yes
-          sysctls: "{{docker_sysctls}}"
-          ports: 
-            - "{{if_inner}}:{{ports.clickhouse.0}}:{{ports.clickhouse.1}}"
-            - "{{if_inner}}:{{ports.clickhouse_tcp.0}}:{{ports.clickhouse_tcp.1}}"
-          volumes:
-            - "{{dirs.clickhouse}}:/var/lib/clickhouse"
-            - "{{dirs.clickhouse_config}}/001_server.xml:{{conf_dir}}/server.xml"
-            - "{{dirs.clickhouse_config}}/002_users.xml:{{users_dir}}/readonly.xml"
-            - "{{dirs.clickhouse_scripts}}:{{init_dir}}"
-            - "{{dirs.clickhouse_log}}:/var/log/clickhouse-server"
-            - "{{dirs.clickhouse_tmp}}:/var/lib/clickhouse/tmp"
-      vars:
-        conf_dir: /etc/clickhouse-server/config.d/
-        users_dir: /etc/clickhouse-server/users.d/
-        init_dir: /docker-entrypoint-initdb.d
-      tags: ['never', 'clickhouse', 'clickhouse-server', 'system', 'full']
+    #   - name: Starting ClickHouse container
+    #     docker_container:
+    #       name: clickhouse
+    #       hostname: clickhouse
+    #       image: "{{images.clickhouse}}"
+    #       # labels: "{{docker_band_lbls}}"
+    #       purge_networks: yes
+    #       networks_cli_compatible: no
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       ulimits:
+    #         - "nofile:262144:262144"
+    #       memory: "{{ mem_limit_clickhouse|default('2g') }}"
+    #       # restart: yes
+    #       # pull: yes
+    #       # recreate: yes
+    #       sysctls: "{{docker_sysctls}}"
+    #       ports: 
+    #         - "{{if_inner}}:{{ports.clickhouse.0}}:{{ports.clickhouse.1}}"
+    #         - "{{if_inner}}:{{ports.clickhouse_tcp.0}}:{{ports.clickhouse_tcp.1}}"
+    #       volumes:
+    #         - "{{dirs.clickhouse}}:/var/lib/clickhouse"
+    #         - "{{dirs.clickhouse_config}}/001_server.xml:{{conf_dir}}/server.xml"
+    #         - "{{dirs.clickhouse_config}}/002_users.xml:{{users_dir}}/readonly.xml"
+    #         - "{{dirs.clickhouse_scripts}}:{{init_dir}}"
+    #         - "{{dirs.clickhouse_log}}:/var/log/clickhouse-server"
+    #         - "{{dirs.clickhouse_tmp}}:/var/lib/clickhouse/tmp"
+    #   vars:
+    #     conf_dir: /etc/clickhouse-server/config.d/
+    #     users_dir: /etc/clickhouse-server/users.d/
+    #     init_dir: /docker-entrypoint-initdb.d
+    #   tags: ['never', 'clickhouse', 'clickhouse-server', 'system', 'full']
 
     ##### ##### ##### ##### #####    Redis server    ##### ##### ##### ##### ##### 
 
@@ -635,82 +635,82 @@
       tags: ['heavyload', 'platform', 'pservice', 'docker-container', 'full']
 
     ##### ##### ##### ##### #####    jupyter    ##### ##### ##### ##### ##### 
-    - block:
-      - docker_container:
-          name: anaconda
-          state: absent
+    # - block:
+    #   - docker_container:
+    #       name: anaconda
+    #       state: absent
 
-      - name: Starting container for service Jupyter
-        docker_container:
-          name: jupyter
-          hostname: jupyter
-          image: "{{image}}"
-          labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: "{{ '/' in  image}}"
-          recreate: yes
-          memory: "{{ mem_limit_jupyter|default('2g') }}"
-          volumes:
-            - "{{dirs.notebooks}}:{{nb_dir}}:cached"
-            - "{{dirs.public}}:{{nb_dir}}/public:cached"
-            - "{{dirs.shared}}:{{nb_dir}}/shared:cached"
-          ports: [ "{{if_inner}}:{{ports.jupyter.0}}:{{ports.jupyter.1}}" ]
-          env: "{{ container_env }}"
-          sysctls: "{{docker_sysctls}}"
+    #   - name: Starting container for service Jupyter
+    #     docker_container:
+    #       name: jupyter
+    #       hostname: jupyter
+    #       image: "{{image}}"
+    #       labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: "{{ '/' in  image}}"
+    #       recreate: yes
+    #       memory: "{{ mem_limit_jupyter|default('2g') }}"
+    #       volumes:
+    #         - "{{dirs.notebooks}}:{{nb_dir}}:cached"
+    #         - "{{dirs.public}}:{{nb_dir}}/public:cached"
+    #         - "{{dirs.shared}}:{{nb_dir}}/shared:cached"
+    #       ports: [ "{{if_inner}}:{{ports.jupyter.0}}:{{ports.jupyter.1}}" ]
+    #       env: "{{ container_env }}"
+    #       sysctls: "{{docker_sysctls}}"
 
-      - name: Fix notebooks permissions
-        command: "chown -R {{_uid}}:{{_gid}} {{dirs.notebooks}}"
-        args:
-          warn: False
+    #   - name: Fix notebooks permissions
+    #     command: "chown -R {{_uid}}:{{_gid}} {{dirs.notebooks}}"
+    #     args:
+    #       warn: False
 
-      vars:
-        service: jupyter
-        image: "{{ images[service] }}"
-        nb_dir: "{{jupyter_notebooks_dir|default('/home/user/notebooks')}}"
-        cmd_parts:
-        container_lbls:
-          "caddy.address": "jupyter.{{_domain}}"
-          "caddy.targetport": "{{ports.jupyter.1}}"
-      when: 'setup_jupyter == True'
-      tags: ['never', 'jupyter', 'jupyter', 'platform', 'pservice', 'docker-container', 'full']
+    #   vars:
+    #     service: jupyter
+    #     image: "{{ images[service] }}"
+    #     nb_dir: "{{jupyter_notebooks_dir|default('/home/user/notebooks')}}"
+    #     cmd_parts:
+    #     container_lbls:
+    #       "caddy.address": "jupyter.{{_domain}}"
+    #       "caddy.targetport": "{{ports.jupyter.1}}"
+    #   when: 'setup_jupyter == True'
+    #   tags: ['never', 'jupyter', 'jupyter', 'platform', 'pservice', 'docker-container', 'full']
 
 
     ##### ##### ##### ##### #####    Grafana    ##### ##### ##### ##### ##### 
-    - block:
-      - name: Creating Grafana datadir
-        file:
-          state: directory
-          path: "{{dirs.grafana_data}}"
-          owner: "{{_uid|string}}" # grafana container ids
-          group: "{{_gid|string}}"
+    # - block:
+    #   - name: Creating Grafana datadir
+    #     file:
+    #       state: directory
+    #       path: "{{dirs.grafana_data}}"
+    #       owner: "{{_uid|string}}" # grafana container ids
+    #       group: "{{_gid|string}}"
 
-      - name: Starting container for service Grafana
-        docker_container:
-          name: grafana
-          hostname: grafana
-          image: "{{images.grafana}}"
-          labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          recreate: yes
-          memory: "300m"
-          ports:
-            - "{{if_inner}}:{{ports.grafana.0}}:{{ports.grafana.1}}"
-          volumes:
-            - '{{dirs.grafana_data}}:/var/lib/grafana'
-      vars:
-        # labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
-        container_lbls:
-          "caddy.address": "grafana.{{_domain}}"
-          "caddy.targetport": "{{ports.grafana.1}}"
-          "caddy.proxy.header_upstream": "X-WEBAUTH-USER admin"
+    #   - name: Starting container for service Grafana
+    #     docker_container:
+    #       name: grafana
+    #       hostname: grafana
+    #       image: "{{images.grafana}}"
+    #       labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       recreate: yes
+    #       memory: "300m"
+    #       ports:
+    #         - "{{if_inner}}:{{ports.grafana.0}}:{{ports.grafana.1}}"
+    #       volumes:
+    #         - '{{dirs.grafana_data}}:/var/lib/grafana'
+    #   vars:
+    #     # labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
+    #     container_lbls:
+    #       "caddy.address": "grafana.{{_domain}}"
+    #       "caddy.targetport": "{{ports.grafana.1}}"
+    #       "caddy.proxy.header_upstream": "X-WEBAUTH-USER admin"
           
-      tags: ['never', 'grafana', 'platform', 'pservice', 'docker-container', 'full']
+    #   tags: ['never', 'grafana', 'platform', 'pservice', 'docker-container', 'full']
 
 
     ##### ##### ##### ##### #####    Theia    ##### ##### ##### ##### ##### 
@@ -778,30 +778,30 @@
     ##### ##### ##### ##### #####    Fake Shop    ##### ##### ##### ##### ##### 
 
 
-    - block:
-      - name: Starting container for service Fake-Shop
-        docker_container:
-          name: "{{service}}"
-          hostname: "{{service}}"
-          image: "{{images[service]}}"
-          labels: "{{ labels|combine(docker_band_lbls, _caddy_container_lbls)}}"
-          env: "{{container_env}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          memory: "50m"
-          ports:
-            - "{{if_inner}}:{{ports[service].0}}:{{ports[service].1}}"
-      vars:
-        service: fakeshop
-        service_addr: 
-        labels:
-          caddy.address: "demo.{{_domain}}"
-          caddy.targetport: "{{ ports[service].1 }}"
-      tags: ['never', 'fakeshop', 'platform', 'pservice', 'docker-container', 'full']
+    # - block:
+    #   - name: Starting container for service Fake-Shop
+    #     docker_container:
+    #       name: "{{service}}"
+    #       hostname: "{{service}}"
+    #       image: "{{images[service]}}"
+    #       labels: "{{ labels|combine(docker_band_lbls, _caddy_container_lbls)}}"
+    #       env: "{{container_env}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       memory: "50m"
+    #       ports:
+    #         - "{{if_inner}}:{{ports[service].0}}:{{ports[service].1}}"
+    #   vars:
+    #     service: fakeshop
+    #     service_addr: 
+    #     labels:
+    #       caddy.address: "demo.{{_domain}}"
+    #       caddy.targetport: "{{ ports[service].1 }}"
+    #   tags: ['never', 'fakeshop', 'platform', 'pservice', 'docker-container', 'full']
 
-    - docker_container: name=ebaloger state=absent
-      tags: ['never', 'ebaloger', 'system', 'platform', 'pservice', 'docker-container', 'full']
+    # - docker_container: name=ebaloger state=absent
+    #   tags: ['never', 'ebaloger', 'system', 'platform', 'pservice', 'docker-container', 'full']
 
-    - docker_container: name=ebaloger state=absent
-      tags: ['never', 'httpdebug', 'system', 'full']
+    # - docker_container: name=ebaloger state=absent
+    #   tags: ['never', 'httpdebug', 'system', 'full']
