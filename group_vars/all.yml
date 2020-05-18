@@ -245,7 +245,7 @@ _chproxy_defs:
   max_execution_time: 30s
   max_queue_size: 100
   to_cluster: local
-_chproxy_allowed_networks_default: "{{local_nets + outer_net}}"
+_chproxy_allowed_networks_default: "{{local_nets + [ outer_net ]}}"
 _chproxy_clusters_default:
   - name: local
     nodes: [ "{{if_inner}}:{{ports.clickhouse.0}}" ]
