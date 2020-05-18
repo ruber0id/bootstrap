@@ -309,52 +309,52 @@
 
     ##### ##### ##### ##### #####    Netdata    ##### ##### ##### ##### ##### 
 
-    - block:
+    # - block:
 
-      - name: disabling netdata service
-        systemd:
-          state: stopped
-          daemon_reload: yes
-          enabled: no
-          masked: yes
-          name: netdata
-        when: ansible_service_mgr == 'systemd'
-        failed_when: False
+    #   - name: disabling netdata service
+    #     systemd:
+    #       state: stopped
+    #       daemon_reload: yes
+    #       enabled: no
+    #       masked: yes
+    #       name: netdata
+    #     when: ansible_service_mgr == 'systemd'
+    #     failed_when: False
           
-      - name: Netdata container
-        docker_container:
-          name: netdata
-          hostname: netdata
-          image: "{{images.netdata}}"
-          labels: "{{container_lbls|combine(_caddy_container_lbls)}}" # docker_band_lbls, 
-          ports: 
-            - "{{if_inner}}:{{ports.netdata.0}}:{{ports.netdata.1}}"
-            - "{{if_inner}}:{{ports.statsd.0}}:{{ports.statsd.1}}/udp"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          env: "{{container_env}}"
-          restart: yes
-          # recreate: yes
-          memory: "200m"
-          sysctls: "{{docker_sysctls}}"
-          capabilities:
-            - SYS_PTRACE
-          security_opts:
-            - apparmor:unconfined
-          volumes:
-            - /proc:/host/proc:ro
-            - /sys:/host/sys:ro
-            - /var/run/docker.sock:/var/run/docker.sock
-      vars:
-        service: netdata
-        container_lbls:
-          "caddy.address": "netdata.{{_domain}}"
-          "caddy.targetport": "{{ports.netdata.1}}"
-        container_env:
-          PGID: "999"
-      tags: ['never', 'netdata', 'system', 'full']    
+    #   - name: Netdata container
+    #     docker_container:
+    #       name: netdata
+    #       hostname: netdata
+    #       image: "{{images.netdata}}"
+    #       labels: "{{container_lbls|combine(_caddy_container_lbls)}}" # docker_band_lbls, 
+    #       ports: 
+    #         - "{{if_inner}}:{{ports.netdata.0}}:{{ports.netdata.1}}"
+    #         - "{{if_inner}}:{{ports.statsd.0}}:{{ports.statsd.1}}/udp"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       env: "{{container_env}}"
+    #       restart: yes
+    #       # recreate: yes
+    #       memory: "200m"
+    #       sysctls: "{{docker_sysctls}}"
+    #       capabilities:
+    #         - SYS_PTRACE
+    #       security_opts:
+    #         - apparmor:unconfined
+    #       volumes:
+    #         - /proc:/host/proc:ro
+    #         - /sys:/host/sys:ro
+    #         - /var/run/docker.sock:/var/run/docker.sock
+    #   vars:
+    #     service: netdata
+    #     container_lbls:
+    #       "caddy.address": "netdata.{{_domain}}"
+    #       "caddy.targetport": "{{ports.netdata.1}}"
+    #     container_env:
+    #       PGID: "999"
+    #   tags: ['never', 'netdata', 'system', 'full']    
 
       # - name: Netdata role execution
       #   include_role:
