@@ -423,6 +423,8 @@
           # recreate: yes
           sysctls: "{{docker_sysctls}}"
           ports: 
+            - "{{if_inner}}:{{ports.clickhouse.0}}:{{ports.clickhouse.1}}"
+            - "{{if_inner}}:{{ports.clickhouse_tcp.0}}:{{ports.clickhouse_tcp.1}}"
             - "{{if_outer}}:{{ports.clickhouse.0}}:{{ports.clickhouse.1}}"
             - "{{if_outer}}:{{ports.clickhouse_tcp.0}}:{{ports.clickhouse_tcp.1}}"
           volumes:
@@ -572,7 +574,7 @@
           pull: yes
           recreate: yes
           memory: "500m"
-          ports: ["{{if_outer}}:{{ports.chproxy.0}}:{{ports.chproxy.1}}"]
+          ports: ["{{if_inner}}:{{ports.chproxy.0}}:{{ports.chproxy.1}}"]
           volumes: ["{{chproxy_config}}:/config.yml:ro"]
       vars:
         chproxy_config: "{{etc_dir}}/chproxy.yml"

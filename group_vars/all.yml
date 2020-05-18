@@ -209,7 +209,7 @@ if_outer: "{{ansible_default_ipv4.address}}"
 net_mask: "{{ ansible_default_ipv4.network }}/{{ ansible_default_ipv4.netmask }}"
 outer_net: "{{ net_mask | ipaddr('net') }}"
 if_inner: "{{docker_host_ip}}"
-local_nets: [ "127.0.0.0/8", "{{s2s_vpn_net}}", "{{docker_net}}", "{{docker_defnet_net}}" , "{{outer_net}}"]
+local_nets: [ "127.0.0.0/8", "{{s2s_vpn_net}}", "{{docker_net}}", "{{docker_defnet_net}}"]
 etc_hosts: # also used in docker containers
   host: "{{if_inner}}"
 # ########## Firewall ##########
@@ -248,7 +248,7 @@ _chproxy_defs:
 _chproxy_allowed_networks_default: "{{local_nets}}"
 _chproxy_clusters_default:
   - name: local
-    nodes: [ "{{if_outer}}:{{ports.clickhouse.0}}" ]
+    nodes: [ "{{if_inner}}:{{ports.clickhouse.0}}" ]
     users:
       - { name: readonly, password: "" }
       - { name: default, password: "" }
