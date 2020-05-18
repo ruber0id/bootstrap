@@ -413,7 +413,7 @@
           purge_networks: yes
           networks_cli_compatible: no
           networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
+          etc_hosts: "{{if_outer}}"
           restart_policy: "{{_restart_policy}}"
           ulimits:
             - "nofile:262144:262144"
@@ -571,7 +571,7 @@
           restart: yes
           pull: yes
           recreate: yes
-          memory: "200m"
+          memory: "500m"
           ports: ["{{if_inner}}:{{ports.chproxy.0}}:{{ports.chproxy.1}}"]
           volumes: ["{{chproxy_config}}:/config.yml:ro"]
       vars:
