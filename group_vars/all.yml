@@ -255,8 +255,8 @@ _chproxy_users_default:
   - { to_user: 'readonly', name: 'readonly', password: 'readonly'}
   - { to_user: 'default', name: 'default', password: 'default'}
 # ########## CH Common ##########
-_chp_dsn: "http://{{main_user}}:{{main_user_password}}@host:{{ports.chproxy.0}}/{{ch_db}}"
-_chs_dsn: "http://{{main_user}}@host:{{ports.clickhouse.0}}/{{ch_db}}"
+_chp_dsn: "http://{{main_user}}:{{main_user_password}}@{{clickhouse_node}}:{{ports.chproxy.0}}/{{ch_db}}"
+_chs_dsn: "http://{{main_user}}@{{clickhouse_node}}:{{ports.clickhouse.0}}/{{ch_db}}"
 # ########## Services env ##########
 _containers_env:
   # https://caddyserver.com/docs/automatic-https#wildcards
