@@ -572,7 +572,7 @@
           pull: yes
           recreate: yes
           memory: "500m"
-          ports: ["{{if_outer}}:{{ports.chproxy.0}}:{{ports.chproxy.1}}"]
+          ports: ["{{if_inner}}:{{ports.chproxy.0}}:{{ports.chproxy.1}}"]
           volumes: ["{{chproxy_config}}:/config.yml:ro"]
       vars:
         chproxy_config: "{{etc_dir}}/chproxy.yml"
