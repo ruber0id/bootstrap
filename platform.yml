@@ -475,7 +475,7 @@
         git:
           repo: "{{repos.band_set}}"
           dest: "{{dirs.band_set}}"
-          version: "{{branch}}"
+          version: "dev"
           accept_hostkey: yes
           force: yes
 
