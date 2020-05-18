@@ -57,7 +57,7 @@ repos:
   splash: "{{_git_organization}}/splash.git"
 # ########## Images ##########
 _images:
-  band: "rockstat/band-base-py:{{ (branch == 'master')|ternary('3.7', '3.7-' + branch) }}"
+  band: "rockstat/band-base-py:dev"
   director: "rockstat/director:{{_tag}}"
   caddy: "rockstat/caddy"
   front: "rockstat/front:{{_tag}}"
@@ -207,6 +207,7 @@ s2s_vpn_host_ip: "{{s2s_vpn_net|net_gw}}"
 # ########## Interfaces ##########
 if_outer: "{{ansible_default_ipv4.address}}"
 if_inner: "{{docker_host_ip}}"
+clickhouse_node: "172.25.1.132"
 local_nets: [ "127.0.0.0/8", "{{s2s_vpn_net}}", "{{docker_net}}", "{{docker_defnet_net}}" ]
 etc_hosts: # also used in docker containers
   host: "{{if_inner}}"
@@ -245,8 +246,8 @@ _chproxy_defs:
   to_cluster: local
 _chproxy_allowed_networks_default: "{{local_nets}}"
 _chproxy_clusters_default:
-  - name: local
-    nodes: [ "{{if_inner}}:{{ports.clickhouse.0}}" ]
+  - name: stats-raw
+    nodes: [ "{{clickhouse_node}}:{{ports.clickhouse.0}}" ]
     users:
       - { name: readonly, password: "" }
       - { name: default, password: "" }
