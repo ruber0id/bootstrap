@@ -3,12 +3,12 @@
 VERSION=3.10.3
 PLATFORM_HOME=/srv/platform
 BOOTSTRAP_BRANCH=${BRANCH:-master}
-BOOTSTRAP_REPO=https://github.com/rockstat/bootstrap.git
+BOOTSTRAP_REPO=https://github.com/ruber0id/bootstrap.git
 BOOTSTRAP_DIR=/srv/platform/bootstrap
 BOOTSTRAP_BINDIR=${BOOTSTRAP_DIR}/bin
 KICKSTART=${BOOTSTRAP_BINDIR}/kickstart
-KICKSTART_CMD="curl -s https://raw.githubusercontent.com/rockstat/bootstrap/${BOOTSTRAP_BRANCH}/bin/kickstart | sudo -E bash -\n"
-BINALIAS=/usr/local/bin/rockstat
+KICKSTART_CMD="curl -s https://raw.githubusercontent.com/ruber0id/bootstrap/${BOOTSTRAP_BRANCH}/bin/kickstart | sudo -E bash -\n"
+BINALIAS=/usr/local/bin/ruber0id
 REPORT_COLLECTOR=https://bolt.rstat.org/upload
 INSTALL_LOG=$(mktemp /tmp/platform-setup.XXXXXXXX)
 FACT_CONF=/etc/ansible/facts.d/config.fact
