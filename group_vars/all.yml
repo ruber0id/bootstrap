@@ -58,14 +58,14 @@ repos:
 # ########## Images ##########
 _images:
   band: "rockstat/band-base-py:dev"
-  director: "rockstat/director:{{_tag}}"
+  director: "rockstat/director:dev"
   caddy: "rockstat/caddy"
-  front: "rockstat/front:{{_tag}}"
-  chwriter: "rockstat/chwriter:{{_tag}}"
+  front: "rockstat/front:dev"
+  chwriter: "rockstat/chwriter:dev"
   ebaloger: rockstat/ebaloger
-  theia: "rockstat/theia-ide:{{_tag}}"
+  theia: "rockstat/theia-ide:dev"
   heavyload: rockstat/heavyload
-  jupyter: "rockstat/jupyter:{{_tag}}"
+  jupyter: "rockstat/jupyter:dev"
   httpdebug: rockstat/httpdebug
   logspout: gliderlabs/logspout
   chproxy: rockstat/chproxy
