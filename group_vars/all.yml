@@ -170,7 +170,7 @@ _ports:
   postgrest: [18080, 3000]
 ports: "{{_ports|combine(_ports_extra|default({}))}}"
 # Mem limits
-mem_limit_clickhouse:  "{{ (ansible_memtotal_mb/2)|int }}m"
+mem_limit_clickhouse:  "{{ (ansible_memtotal_mb)|int }}m"
 mem_limit_redis: "{{ (ansible_memtotal_mb/8)|int }}m"
 mem_limit_jupyter: "{{ (ansible_memtotal_mb/8)|int }}m"
 # ########## Docker ##########
