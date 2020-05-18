@@ -4,15 +4,15 @@
   become: yes
   tasks:
 
-    - debug:
-        msg: 
-          email: "{{_email}}"
-          realname: "{{_fullname}}"
-          domain: "{{_domain}}"
-          admin_password: "{{_admin_password}}"
-          enable_support: "{{_enable_support}}"
-          ssl_wildcard: "{{_ssl_wildcard}}"
-      tags: ['never']
+    # - debug:
+    #     msg: 
+    #       email: "{{_email}}"
+    #       realname: "{{_fullname}}"
+    #       domain: "{{_domain}}"
+    #       admin_password: "{{_admin_password}}"
+    #       enable_support: "{{_enable_support}}"
+    #       ssl_wildcard: "{{_ssl_wildcard}}"
+    #   tags: ['never']
 
 
       #### ##### ##### ##### #####    Check is python 3    ##### ##### ##### ##### ##### 
@@ -42,31 +42,31 @@
 
       ##### ##### ##### ##### #####    Server configuration    ##### ##### ##### ##### ##### 
       
-    - block:
-      - name: BaseServer role execution
-        include_role:
-          name: dr.server
-        vars:
-          drs_setup_user: yes
-          drs_user: '{{support_user}}'
-          drs_home_dir: "{{home_dir}}"
-          drs_pub_key_file: '{{support_key_file}}'
-          drs_disable_ipv6: "{{disable_ipv6}}"
-          drs_extra_hosts: "{{etc_hosts}}"
-          drs_uid: "{{_gid}}"
-          drs_gid: "{{_uid}}"
-          r_authorized_key_remove: "{{ not _enable_support }}"
-      when: 'setup_server == True'
-      tags: ['never', 'os', 'network', 'system', 'full']
+    # - block:
+    #   - name: BaseServer role execution
+    #     include_role:
+    #       name: dr.server
+    #     vars:
+    #       drs_setup_user: yes
+    #       drs_user: '{{support_user}}'
+    #       drs_home_dir: "{{home_dir}}"
+    #       drs_pub_key_file: '{{support_key_file}}'
+    #       drs_disable_ipv6: "{{disable_ipv6}}"
+    #       drs_extra_hosts: "{{etc_hosts}}"
+    #       drs_uid: "{{_gid}}"
+    #       drs_gid: "{{_uid}}"
+    #       r_authorized_key_remove: "{{ not _enable_support }}"
+    #   when: 'setup_server == True'
+    #   tags: ['never', 'os', 'network', 'system', 'full']
 
-      ##### ##### ##### ##### #####    Check DNS configuration    ##### ##### ##### ##### ##### 
-      # Should be after server configuration role that ensure dns utils is installed
+    #   ##### ##### ##### ##### #####    Check DNS configuration    ##### ##### ##### ##### ##### 
+    #   # Should be after server configuration role that ensure dns utils is installed
 
-    - block:
-        - include_tasks: tasks/check_dns.yml
-      vars:
-        check_domains: "{{_domains + [_domain]}}"
-      tags: ['never', 'ssl', 'full']
+    # - block:
+    #     - include_tasks: tasks/check_dns.yml
+    #   vars:
+    #     check_domains: "{{_domains + [_domain]}}"
+    #   tags: ['never', 'ssl', 'full']
 
       
 
@@ -90,34 +90,34 @@
       tags: ['never', 'system', 'docker', 'full']
 
 
-    ##### ##### ##### ##### #####    Dashboard    ##### ##### ##### ##### ##### 
+    # ##### ##### ##### ##### #####    Dashboard    ##### ##### ##### ##### ##### 
 
-    - name: Cloning Dashboard content
-      git:
-        repo: '{{repos.dashboard}}'
-        version: HEAD
-        force: yes
-        accept_hostkey: yes
-        dest: '{{dirs.dashboard}}'
-      tags: ['dashboard', 'platform', 'ppart', 'band', 'static', 'full']
+    # - name: Cloning Dashboard content
+    #   git:
+    #     repo: '{{repos.dashboard}}'
+    #     version: HEAD
+    #     force: yes
+    #     accept_hostkey: yes
+    #     dest: '{{dirs.dashboard}}'
+    #   tags: ['dashboard', 'platform', 'ppart', 'band', 'static', 'full']
 
 
-    ##### ##### ##### ##### #####    Splash screen    ##### ##### ##### ##### ##### 
+    # ##### ##### ##### ##### #####    Splash screen    ##### ##### ##### ##### ##### 
 
-    - block:
-      - name: Cloning Splash content
-        git:
-          repo: "{{repos.splash}}"
-          dest: "{{dirs.splash}}"
-          accept_hostkey: yes
-          force: yes
+    # - block:
+    #   - name: Cloning Splash content
+    #     git:
+    #       repo: "{{repos.splash}}"
+    #       dest: "{{dirs.splash}}"
+    #       accept_hostkey: yes
+    #       force: yes
         
-      - template:
-          src: google-webmaster.j2
-          dest: "{{dirs.splash}}/{{_google_webmaster}}"
-        when: "_google_webmaster is defined and _google_webmaster != ''"
+    #   - template:
+    #       src: google-webmaster.j2
+    #       dest: "{{dirs.splash}}/{{_google_webmaster}}"
+    #     when: "_google_webmaster is defined and _google_webmaster != ''"
       
-      tags: ['splash', 'platform', 'ppart', 'band', 'static', 'full']
+    #   tags: ['splash', 'platform', 'ppart', 'band', 'static', 'full']
 
 
     ##### ##### ##### ##### #####    Exposeur (UFW, iptables)    ##### ##### ##### ##### ##### 
@@ -134,119 +134,119 @@
 
     ##### ##### ##### ##### #####    Lets encrypt - acme.sh    ##### ##### ##### ##### ##### 
 
-    - block:
+    # - block:
           
-        - name: LetsEncrypt role execution
-          include_role:
-            name: dr.letsencrypt.wildcard.auto
-          vars:
-            _r_domain: "{{_domain}}"
-            _r_subdomains: "{{_subdomains}}"
-            _r_webroot: "{{dirs.well_known}}"
-            _r_force: "{{ssl_force|default(False)|bool}}"
-            _r_wildcard: "{{_ssl_wildcard}}"
-            _r_docker_networks: [ { name: "{{docker_net_name}}" } ]
-            _r_docker_labels: "{{ {}|combine(labels, docker_band_lbls) }}"
-            _r_check_addr: "{{if_inner}}:{{ports.http.0}}"
-            _r_bind_addr: "{{if_inner}}:{{ports.letsencrypt.0}}"
-            _r_cert_root: "{{dirs.certs}}"
-            _r_dns_provider: "{{_ssl_dns_provider|default('dns_acmedns')}}" 
-            _r_dns_envs: "{{_ssl_dns_envs|default({})}}"
-            _r_debug: yes
-            _r_log: no
+    #     - name: LetsEncrypt role execution
+    #       include_role:
+    #         name: dr.letsencrypt.wildcard.auto
+    #       vars:
+    #         _r_domain: "{{_domain}}"
+    #         _r_subdomains: "{{_subdomains}}"
+    #         _r_webroot: "{{dirs.well_known}}"
+    #         _r_force: "{{ssl_force|default(False)|bool}}"
+    #         _r_wildcard: "{{_ssl_wildcard}}"
+    #         _r_docker_networks: [ { name: "{{docker_net_name}}" } ]
+    #         _r_docker_labels: "{{ {}|combine(labels, docker_band_lbls) }}"
+    #         _r_check_addr: "{{if_inner}}:{{ports.http.0}}"
+    #         _r_bind_addr: "{{if_inner}}:{{ports.letsencrypt.0}}"
+    #         _r_cert_root: "{{dirs.certs}}"
+    #         _r_dns_provider: "{{_ssl_dns_provider|default('dns_acmedns')}}" 
+    #         _r_dns_envs: "{{_ssl_dns_envs|default({})}}"
+    #         _r_debug: yes
+    #         _r_log: no
 
-        - shell: nginx -t && nginx -s reload || /bin/true
+    #     - shell: nginx -t && nginx -s reload || /bin/true
 
-      vars:
-        oldloc: "/etc/letsencrypt/live/{{_domain}}"
-        labels:
-          band.service.title: "SSL Renewer"
-          band.service.def_position: "0x6"
-
-
-      when: "_setup_ssl == True"
-      tags: ['never', 'full', 'system', 'ssl']
+    #   vars:
+    #     oldloc: "/etc/letsencrypt/live/{{_domain}}"
+    #     labels:
+    #       band.service.title: "SSL Renewer"
+    #       band.service.def_position: "0x6"
 
 
-    ##### ##### ##### ##### #####    Nginx    ##### ##### ##### ##### ##### 
+    #   when: "_setup_ssl == True"
+    #   tags: ['never', 'full', 'system', 'ssl']
 
-    - block:
-      - include_vars: vars/nginx.yml
-      - name: Nginx role execution
-        include_role:
-          name: jdauphant.nginx
-        vars:
-          nginx_official_repo: no
-          keep_only_specified: yes
-          nginx_http_params: '{{_nginx_http_params}}'
-          nginx_sites: "{{_nginx_sites|combine(_nginx_sites_extra|default({}))}}"
-          nginx_auth_basic_files:
-            common: "{{ common_users|flatten }}"
-          nginx_configs:
-            upgrade: '{{_nginx_proto_upgrade}}'
-            gzip: '{{_nginx_gzip_params}}'
-            proxy: '{{_nginx_proxy_params + _nginx_proxy_params_extra|default([])}}'
-            upstream: '{{_nginx_upstreams + _nginx_upstreams_extra|default([]) }}'
-            ssl: '{{_nginx_ssl_params}}'
-      vars:
-        # local_config: "{{ansible_local.config|default({})}}"
-        # local_general: "{{local_config.general|default({})}}"
-        common_users:
-          - "admin:{{_admin_password}}"
-          # - "{{local_general.users}}"
-      when: "setup_nginx == True"
-      tags: ['never', 'nginx', 'httpd', 'system', 'full']
+
+    # ##### ##### ##### ##### #####    Nginx    ##### ##### ##### ##### ##### 
+
+    # - block:
+    #   - include_vars: vars/nginx.yml
+    #   - name: Nginx role execution
+    #     include_role:
+    #       name: jdauphant.nginx
+    #     vars:
+    #       nginx_official_repo: no
+    #       keep_only_specified: yes
+    #       nginx_http_params: '{{_nginx_http_params}}'
+    #       nginx_sites: "{{_nginx_sites|combine(_nginx_sites_extra|default({}))}}"
+    #       nginx_auth_basic_files:
+    #         common: "{{ common_users|flatten }}"
+    #       nginx_configs:
+    #         upgrade: '{{_nginx_proto_upgrade}}'
+    #         gzip: '{{_nginx_gzip_params}}'
+    #         proxy: '{{_nginx_proxy_params + _nginx_proxy_params_extra|default([])}}'
+    #         upstream: '{{_nginx_upstreams + _nginx_upstreams_extra|default([]) }}'
+    #         ssl: '{{_nginx_ssl_params}}'
+    #   vars:
+    #     # local_config: "{{ansible_local.config|default({})}}"
+    #     # local_general: "{{local_config.general|default({})}}"
+    #     common_users:
+    #       - "admin:{{_admin_password}}"
+    #       # - "{{local_general.users}}"
+    #   when: "setup_nginx == True"
+      # tags: ['never', 'nginx', 'httpd', 'system', 'full']
 
 
     ##### ##### ##### ##### #####    Netdata    ##### ##### ##### ##### ##### 
 
-    - block:
+    # - block:
 
 
-      - name: Netdata container
-        docker_container:
-          name: netdata
-          hostname: netdata
-          image: "{{images.netdata}}"
-          labels: "{{docker_band_lbls}}"
-          ports: 
-            - "{{if_inner}}:{{ports.netdata.0}}:{{ports.netdata.1}}"
-            - "{{if_inner}}:{{ports.statsd.0}}:{{ports.statsd.1}}/udp"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          env: "{{container_env}}"
-          restart: yes
-          # recreate: yes
-          memory: "200m"
-          capabilities:
-            - SYS_PTRACE
-          security_opts:
-            - apparmor:unconfined
-          volumes:
-            - /proc:/host/proc:ro
-            - /sys:/host/sys:ro
-            - /var/run/docker.sock:/var/run/docker.sock
+    #   - name: Netdata container
+    #     docker_container:
+    #       name: netdata
+    #       hostname: netdata
+    #       image: "{{images.netdata}}"
+    #       labels: "{{docker_band_lbls}}"
+    #       ports: 
+    #         - "{{if_inner}}:{{ports.netdata.0}}:{{ports.netdata.1}}"
+    #         - "{{if_inner}}:{{ports.statsd.0}}:{{ports.statsd.1}}/udp"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       env: "{{container_env}}"
+    #       restart: yes
+    #       # recreate: yes
+    #       memory: "200m"
+    #       capabilities:
+    #         - SYS_PTRACE
+    #       security_opts:
+    #         - apparmor:unconfined
+    #       volumes:
+    #         - /proc:/host/proc:ro
+    #         - /sys:/host/sys:ro
+    #         - /var/run/docker.sock:/var/run/docker.sock
 
-      - name: Netdata role execution
-        include_role:
-          name: dr.netdata
-        vars:
-          drn_action: remove
-          drn_allow:
-            dashboard_from: "*"
-            badges_from: "*"
-            conf_from: "*"
-            connections_from: "*"
-            streaming_from: "*"
-          drn_stream: '{{netdata_stream_config|default({})}}'
-          drn_backend: '{{netdata_backend_config|default({})}}'
-          drn_bind_to: "{{if_inner}}"
-      vars:
-        container_env:
-          PGID: "999"
-      tags: ['never', 'netdata', 'system', 'full']
+    #   - name: Netdata role execution
+    #     include_role:
+    #       name: dr.netdata
+    #     vars:
+    #       drn_action: remove
+    #       drn_allow:
+    #         dashboard_from: "*"
+    #         badges_from: "*"
+    #         conf_from: "*"
+    #         connections_from: "*"
+    #         streaming_from: "*"
+    #       drn_stream: '{{netdata_stream_config|default({})}}'
+    #       drn_backend: '{{netdata_backend_config|default({})}}'
+    #       drn_bind_to: "{{if_inner}}"
+    #   vars:
+    #     container_env:
+    #       PGID: "999"
+    #   tags: ['never', 'netdata', 'system', 'full']
 
     ##### ##### ##### ##### #####    Clickhouse    ##### ##### ##### ##### ##### 
 
@@ -267,98 +267,98 @@
 
     ##### ##### ##### ##### #####    Redis server    ##### ##### ##### ##### ##### 
 
-    - name: Redis setup
-      block:
-      - name: Starting container for service Redis
-        docker_container:
-          name: redis
-          hostname: redis
-          image: "{{images.redis}}"
-          # labels: "{{docker_band_lbls}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          restart: yes
-          pull: yes
-          recreate: yes
-          memory: "300m"
-          ports: ["{{if_inner}}:{{ports.redis.0}}:{{ports.redis.1}}"]
-          volumes: ["{{dirs.redis}}:/data"]
-      tags: ['never', 'redis', 'system', 'docker-container', 'full']
+    # - name: Redis setup
+    #   block:
+    #   - name: Starting container for service Redis
+    #     docker_container:
+    #       name: redis
+    #       hostname: redis
+    #       image: "{{images.redis}}"
+    #       # labels: "{{docker_band_lbls}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       restart: yes
+    #       pull: yes
+    #       recreate: yes
+    #       memory: "300m"
+    #       ports: ["{{if_inner}}:{{ports.redis.0}}:{{ports.redis.1}}"]
+    #       volumes: ["{{dirs.redis}}:/data"]
+    #   tags: ['never', 'redis', 'system', 'docker-container', 'full']
 
     ##### ##### ##### ##### #####    Band Director    ##### ##### ##### ##### ##### 
 
-    - block:
+    # - block:
 
-      - name: Pulling latest Band framework base image from docker hub
-        docker_image:
-          name: "{{images.band}}"
-          pull: yes
-          force: yes
+    #   - name: Pulling latest Band framework base image from docker hub
+    #     docker_image:
+    #       name: "{{images.band}}"
+    #       pull: yes
+    #       force: yes
 
-      - name: Pulling BandSet services collection content from git
-        git:
-          repo: "{{repos.band_set}}"
-          dest: "{{dirs.band_set}}"
-          version: "{{branch}}"
-          accept_hostkey: yes
-          force: yes
+    #   - name: Pulling BandSet services collection content from git
+    #     git:
+    #       repo: "{{repos.band_set}}"
+    #       dest: "{{dirs.band_set}}"
+    #       version: "{{branch}}"
+    #       accept_hostkey: yes
+    #       force: yes
 
-      - name: Starting container for service Director
-        docker_container:
-          name: director
-          hostname: director
-          image: "{{images.director}}"
-          labels: "{{docker_band_lbls}}"
-          ports: [ "{{if_inner}}:{{ports.director.0}}:{{ports.director.1}}" ]
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          env: "{{ container_env|combine({'ENCODED_ENV': container_env|to_json }) }}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          recreate: yes
-          memory: "300m"
-          volumes:
-            - "{{dirs.band_set}}:/images/band_set"
-            - "{{dirs.rockme_set}}:/images/rockme_set"
-            - "{{dirs.user_images}}:/images/user"
-            - "{{dirs.director_data}}:/data" # containers configs
-            - "{{dirs.environments}}:/data/environments"
-            - "{{dirs.etc_dir}}:/srv/platform/etc"
-            - "/var/run/docker.sock:/var/run/docker.sock"
-      vars:
-        service: director
-      tags: ['band', 'platform', 'ppart', 'director', 'docker-container', 'full']
+    #   - name: Starting container for service Director
+    #     docker_container:
+    #       name: director
+    #       hostname: director
+    #       image: "{{images.director}}"
+    #       labels: "{{docker_band_lbls}}"
+    #       ports: [ "{{if_inner}}:{{ports.director.0}}:{{ports.director.1}}" ]
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       env: "{{ container_env|combine({'ENCODED_ENV': container_env|to_json }) }}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       recreate: yes
+    #       memory: "300m"
+    #       volumes:
+    #         - "{{dirs.band_set}}:/images/band_set"
+    #         - "{{dirs.rockme_set}}:/images/rockme_set"
+    #         - "{{dirs.user_images}}:/images/user"
+    #         - "{{dirs.director_data}}:/data" # containers configs
+    #         - "{{dirs.environments}}:/data/environments"
+    #         - "{{dirs.etc_dir}}:/srv/platform/etc"
+    #         - "/var/run/docker.sock:/var/run/docker.sock"
+    #   vars:
+    #     service: director
+    #   tags: ['band', 'platform', 'ppart', 'director', 'docker-container', 'full']
 
     ##### ##### ##### ##### #####    Front    ##### ##### ##### ##### ##### 
 
-    - block:
-      - docker_container: name=frontier state=absent
+    # - block:
+    #   - docker_container: name=frontier state=absent
 
-      - name: Starting container for service Front
-        docker_container:
-          name: front
-          hostname: front
-          image: "{{ images.front }}"
-          labels: "{{ docker_band_lbls }}"
-          ports: 
-            - "{{if_inner}}:{{ports.front.0}}:{{ports.front.1}}"
-            - "{{if_inner}}:{{ports.front_ws.0}}:{{ports.front_ws.1}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          env: "{{container_env}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          recreate: yes
-          memory: "300m"
-          volumes:
-            - "{{dirs.front_custom_config}}:/app/config/custom"
+    #   - name: Starting container for service Front
+    #     docker_container:
+    #       name: front
+    #       hostname: front
+    #       image: "{{ images.front }}"
+    #       labels: "{{ docker_band_lbls }}"
+    #       ports: 
+    #         - "{{if_inner}}:{{ports.front.0}}:{{ports.front.1}}"
+    #         - "{{if_inner}}:{{ports.front_ws.0}}:{{ports.front_ws.1}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       env: "{{container_env}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       recreate: yes
+    #       memory: "300m"
+    #       volumes:
+    #         - "{{dirs.front_custom_config}}:/app/config/custom"
 
-      vars:
-        service: "front"
-      tags: ['front', 'platform', 'ppart', 'rockme', 'docker-container', 'full']
+    #   vars:
+    #     service: "front"
+    #   tags: ['front', 'platform', 'ppart', 'rockme', 'docker-container', 'full']
 
 
     ##### ##### ##### ##### #####    ClickHouse migrations    ##### ##### ##### ##### ##### 
@@ -392,7 +392,7 @@
           restart: yes
           pull: yes
           recreate: yes
-          memory: "200m"
+          memory: "500m"
           ports: ["{{if_inner}}:{{ports.chproxy.0}}:{{ports.chproxy.1}}"]
           volumes: ["{{chproxy_config}}:/config.yml:ro"]
       vars:
@@ -406,187 +406,187 @@
 
     ##### ##### ##### ##### #####    ClickHouse Writer    ##### ##### ##### ##### ##### 
 
-    - block:
-      - name: Starting container for service ChWriter
-        docker_container:
-          name: chwriter
-          hostname: chwriter
-          image: "{{images.chwriter}}"
-          labels: "{{docker_band_lbls}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          env: "{{container_env}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          recreate: yes
-          memory: "300m"
-          volumes:
-            - "{{dirs.chwriter_custom_config}}:/app/config/custom"
-            - "{{dirs.chwriter_custom_migrations}}:/app/migrations/custom"
-            - "{{dirs.chwriter_emergency}}:/app/emergency"
-      vars:
-        service: chwriter
-      tags: ['chwriter', 'platform', 'ppart', 'rockme', 'docker-container', 'full']
+    # - block:
+    #   - name: Starting container for service ChWriter
+    #     docker_container:
+    #       name: chwriter
+    #       hostname: chwriter
+    #       image: "{{images.chwriter}}"
+    #       labels: "{{docker_band_lbls}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       env: "{{container_env}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       recreate: yes
+    #       memory: "300m"
+    #       volumes:
+    #         - "{{dirs.chwriter_custom_config}}:/app/config/custom"
+    #         - "{{dirs.chwriter_custom_migrations}}:/app/migrations/custom"
+    #         - "{{dirs.chwriter_emergency}}:/app/emergency"
+    #   vars:
+    #     service: chwriter
+    #   tags: ['chwriter', 'platform', 'ppart', 'rockme', 'docker-container', 'full']
 
     ##### ##### ##### ##### #####    Heavyload    ##### ##### ##### ##### ##### 
 
 
-    - block:
-      - name: Starting container for service Heavyload
-        docker_container:
-          name: heavyload
-          hostname: heavyload
-          image: "{{images.heavyload}}"
-          labels: "{{docker_band_lbls}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          env: "{{container_env}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          memory: "500m"
-          volumes:
-            - "{{dirs.uploads}}:/go/src/heavyload/upload"
-          ports:
-            - "{{if_inner}}:{{ports.heavyload.0}}:{{ports.heavyload.1}}"
-      vars:
-        service: heavyload
-      tags: ['heavyload', 'platform', 'pservice', 'docker-container', 'full']
+    # - block:
+    #   - name: Starting container for service Heavyload
+    #     docker_container:
+    #       name: heavyload
+    #       hostname: heavyload
+    #       image: "{{images.heavyload}}"
+    #       labels: "{{docker_band_lbls}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       env: "{{container_env}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       memory: "500m"
+    #       volumes:
+    #         - "{{dirs.uploads}}:/go/src/heavyload/upload"
+    #       ports:
+    #         - "{{if_inner}}:{{ports.heavyload.0}}:{{ports.heavyload.1}}"
+    #   vars:
+    #     service: heavyload
+    #   tags: ['heavyload', 'platform', 'pservice', 'docker-container', 'full']
 
     ##### ##### ##### ##### #####    Anaconda    ##### ##### ##### ##### ##### 
-    - block:
-      - name: Starting container for service Jupyter
-        docker_container:
-          name: anaconda
-          hostname: anaconda
-          image: "{{images.anaconda}}"
-          labels: "{{docker_band_lbls}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          recreate: yes
-          memory: "{{ anaconda_mem_limit|default('2g') }}"
-          volumes:
-            - "{{dirs.notebooks}}:/opt/notebooks:cached"
-            - "{{dirs.public}}:/opt/notebooks/public:cached"
+    # - block:
+    #   - name: Starting container for service Jupyter
+    #     docker_container:
+    #       name: anaconda
+    #       hostname: anaconda
+    #       image: "{{images.anaconda}}"
+    #       labels: "{{docker_band_lbls}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       recreate: yes
+    #       memory: "{{ anaconda_mem_limit|default('2g') }}"
+    #       volumes:
+    #         - "{{dirs.notebooks}}:/opt/notebooks:cached"
+    #         - "{{dirs.public}}:/opt/notebooks/public:cached"
 
-          ports: [ "{{if_inner}}:{{ports.jupyter.0}}:{{ports.jupyter.1}}" ]
-          env: "{{ container_env }}"
-      vars:
-        service: anaconda
-        cmd_parts:
-      when: 'setup_jupyter == True'
-      tags: ['never', 'anaconda', 'jupyter', 'platform', 'pservice', 'docker-container', 'full']
+    #       ports: [ "{{if_inner}}:{{ports.jupyter.0}}:{{ports.jupyter.1}}" ]
+    #       env: "{{ container_env }}"
+    #   vars:
+    #     service: anaconda
+    #     cmd_parts:
+    #   when: 'setup_jupyter == True'
+    #   tags: ['never', 'anaconda', 'jupyter', 'platform', 'pservice', 'docker-container', 'full']
 
 
     ##### ##### ##### ##### #####    Grafana    ##### ##### ##### ##### ##### 
-    - block:
-      - name: Creating Grafana datadir
-        file:
-          state: directory
-          path: "{{dirs.grafana_data}}"
-          owner: "{{_uid}}" # grafana container ids
-          group: "{{_gid}}"
+    # - block:
+    #   - name: Creating Grafana datadir
+    #     file:
+    #       state: directory
+    #       path: "{{dirs.grafana_data}}"
+    #       owner: "{{_uid}}" # grafana container ids
+    #       group: "{{_gid}}"
 
-      - name: Starting container for service Grafana
-        docker_container:
-          name: grafana
-          hostname: grafana
-          image: "{{images.grafana}}"
-          labels: "{{docker_band_lbls}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          recreate: yes
-          memory: "300m"
-          ports:
-            - "{{if_inner}}:{{ports.grafana.0}}:{{ports.grafana.1}}"
-          volumes:
-            - '{{dirs.grafana_data}}:/var/lib/grafana'
-      tags: ['never', 'grafana', 'platform', 'pservice', 'docker-container', 'full']
+    #   - name: Starting container for service Grafana
+    #     docker_container:
+    #       name: grafana
+    #       hostname: grafana
+    #       image: "{{images.grafana}}"
+    #       labels: "{{docker_band_lbls}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       recreate: yes
+    #       memory: "300m"
+    #       ports:
+    #         - "{{if_inner}}:{{ports.grafana.0}}:{{ports.grafana.1}}"
+    #       volumes:
+    #         - '{{dirs.grafana_data}}:/var/lib/grafana'
+    #   tags: ['never', 'grafana', 'platform', 'pservice', 'docker-container', 'full']
 
 
     ##### ##### ##### ##### #####    Theia    ##### ##### ##### ##### ##### 
-    - block:
+    # - block:
 
-      - name: Fix workspace permissions
-        command: "chown -R {{_uid}}:{{_gid}} {{dirs.workspace}}"
-        args:
-          warn: False
+    #   - name: Fix workspace permissions
+    #     command: "chown -R {{_uid}}:{{_gid}} {{dirs.workspace}}"
+    #     args:
+    #       warn: False
       
-      - name: Starting container for service Theia
-        docker_container:
-          name: theia
-          hostname: theia
-          image: "{{images.theia}}"
-          labels: "{{docker_band_lbls}}"
-          ports: [ "{{if_inner}}:{{ports.theia.0}}:{{ports.theia.1}}" ]
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          env: "{{ container_env }}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          recreate: yes
-          memory: "1g"
-          volumes:
-            - "{{dirs.workspace}}:{{project_dir}}:cached"
-            - "{{dirs.user_images}}:{{project_dir}}/images:cached"
-            - "{{dirs.user_libraries}}:{{project_dir}}/libraries:cached"
-            - "{{dirs.public}}:{{project_dir}}/public:cached"
-            - "{{dirs.chwriter_custom_migrations}}:{{project_dir}}/config/migrations:cached"
-            - "{{dirs.band_set}}:{{project_dir}}/sources_ro/band_set:ro"
-            - "{{dirs.band_set}}/__skeletons:{{project_dir}}/sources_ro/skeletons:ro"
-            - "{{dirs.chwriter_custom_config}}:{{custom_config_dir}}/chwriter:cached"
-            - "{{dirs.front_custom_config}}:{{custom_config_dir}}/front:cached"
-            - "{{dirs.environments}}:{{config_dir}}/environments:cached"
-      vars:
-        project_dir: /home/theia/project
-        config_dir: "{{project_dir}}/config"
-        custom_config_dir: "{{config_dir}}/custom"
-        service: theia
-      when: 'setup_theia == True'
-      tags: ['theia', 'platform', 'pservice', 'band', 'docker-container', 'full']
+    #   - name: Starting container for service Theia
+    #     docker_container:
+    #       name: theia
+    #       hostname: theia
+    #       image: "{{images.theia}}"
+    #       labels: "{{docker_band_lbls}}"
+    #       ports: [ "{{if_inner}}:{{ports.theia.0}}:{{ports.theia.1}}" ]
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       env: "{{ container_env }}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       recreate: yes
+    #       memory: "1g"
+    #       volumes:
+    #         - "{{dirs.workspace}}:{{project_dir}}:cached"
+    #         - "{{dirs.user_images}}:{{project_dir}}/images:cached"
+    #         - "{{dirs.user_libraries}}:{{project_dir}}/libraries:cached"
+    #         - "{{dirs.public}}:{{project_dir}}/public:cached"
+    #         - "{{dirs.chwriter_custom_migrations}}:{{project_dir}}/config/migrations:cached"
+    #         - "{{dirs.band_set}}:{{project_dir}}/sources_ro/band_set:ro"
+    #         - "{{dirs.band_set}}/__skeletons:{{project_dir}}/sources_ro/skeletons:ro"
+    #         - "{{dirs.chwriter_custom_config}}:{{custom_config_dir}}/chwriter:cached"
+    #         - "{{dirs.front_custom_config}}:{{custom_config_dir}}/front:cached"
+    #         - "{{dirs.environments}}:{{config_dir}}/environments:cached"
+    #   vars:
+    #     project_dir: /home/theia/project
+    #     config_dir: "{{project_dir}}/config"
+    #     custom_config_dir: "{{config_dir}}/custom"
+    #     service: theia
+    #   when: 'setup_theia == True'
+    #   tags: ['theia', 'platform', 'pservice', 'band', 'docker-container', 'full']
 
 
     ##### ##### ##### ##### #####    VPN Server    ##### ##### ##### ##### ##### 
 
 
-    - import_tasks: tasks/setup_vpn_server.yml
-      tags: ['never', 'ovpn-server']
+    # - import_tasks: tasks/setup_vpn_server.yml
+    #   tags: ['never', 'ovpn-server']
 
 
-    ##### ##### ##### ##### #####    Custom tasks    ##### ##### ##### ##### ##### 
+    # ##### ##### ##### ##### #####    Custom tasks    ##### ##### ##### ##### ##### 
 
-    - import_tasks: tasks/custom.yml
+    # - import_tasks: tasks/custom.yml
 
-    ##### ##### ##### ##### #####    Fake Shop    ##### ##### ##### ##### ##### 
+    # ##### ##### ##### ##### #####    Fake Shop    ##### ##### ##### ##### ##### 
 
 
-    - block:
-      - name: Starting container for service Fake-Shop
-        docker_container:
-          name: "{{service}}"
-          hostname: "{{service}}"
-          image: "{{images[service]}}"
-          labels: "{{docker_band_lbls}}"
-          env: "{{container_env}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          memory: "50m"
-          ports:
-            - "{{if_inner}}:{{ports[service].0}}:{{ports[service].1}}"
-      vars:
-        service: fakeshop
-      tags: ['never', 'fakeshop', 'platform', 'pservice', 'docker-container', 'full']
+    # - block:
+    #   - name: Starting container for service Fake-Shop
+    #     docker_container:
+    #       name: "{{service}}"
+    #       hostname: "{{service}}"
+    #       image: "{{images[service]}}"
+    #       labels: "{{docker_band_lbls}}"
+    #       env: "{{container_env}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       memory: "50m"
+    #       ports:
+    #         - "{{if_inner}}:{{ports[service].0}}:{{ports[service].1}}"
+    #   vars:
+    #     service: fakeshop
+    #   tags: ['never', 'fakeshop', 'platform', 'pservice', 'docker-container', 'full']
 
-    - docker_container: name=ebaloger state=absent
-      tags: ['never', 'ebaloger', 'system', 'platform', 'pservice', 'docker-container', 'full']
+    # - docker_container: name=ebaloger state=absent
+    #   tags: ['never', 'ebaloger', 'system', 'platform', 'pservice', 'docker-container', 'full']
 
-    - docker_container: name=ebaloger state=absent
-      tags: ['never', 'httpdebug', 'system', 'full']
+    # - docker_container: name=ebaloger state=absent
+    #   tags: ['never', 'httpdebug', 'system', 'full']
