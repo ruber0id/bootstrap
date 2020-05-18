@@ -423,8 +423,8 @@
           # recreate: yes
           sysctls: "{{docker_sysctls}}"
           ports: 
-            - "{{if_inner}}:{{ports.clickhouse.0}}:{{ports.clickhouse.1}}"
-            - "{{if_inner}}:{{ports.clickhouse_tcp.0}}:{{ports.clickhouse_tcp.1}}"
+            - "{{if_outer}}:{{ports.clickhouse.0}}:{{ports.clickhouse.1}}"
+            - "{{if_outer}}:{{ports.clickhouse_tcp.0}}:{{ports.clickhouse_tcp.1}}"
           volumes:
             - "{{dirs.clickhouse}}:/var/lib/clickhouse"
             - "{{dirs.clickhouse_config}}/001_server.xml:{{conf_dir}}/server.xml"
