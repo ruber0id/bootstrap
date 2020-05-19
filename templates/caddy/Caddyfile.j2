@@ -15,6 +15,7 @@
 
 
 (back) {
+    tls off
     jwt {
         path /
         allow sub dr
@@ -63,8 +64,6 @@ an.aws.markpoint.tech {
 app-eu.{{tmpl.domain}} {
     import login
     import back
-
-    tls off
 
 #    log / stdout
     proxy /ws http://{{tmpl.director_to}} {
