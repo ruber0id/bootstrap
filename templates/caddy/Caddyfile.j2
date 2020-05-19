@@ -1,18 +1,3 @@
-(cert) {
-    tls {{tmpl.email}} {# {
-        {{ tmpl.dns_provider|ternary('dns ' + tmpl.dns_provider, '') }}
-        {{ tmpl.caddy_wildcard|default(False)|ternary('wildcard', '') }}
-    } #}
-
-}
-
-(cert_h11) {
-    tls {
-        alpn http1.1
-    }
-}
-
-
 
 (login) {
     login {
@@ -41,7 +26,6 @@
 
 
 an.aws.markpoint.tech {
-#    import cert
     root /wwwroot
     log stdout
     errors stdout
@@ -76,7 +60,6 @@ an.aws.markpoint.tech {
 
 
 app-eu.{{tmpl.domain}} {
-#    import cert
     import login
     import back
 
