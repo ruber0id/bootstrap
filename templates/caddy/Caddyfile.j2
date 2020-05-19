@@ -26,6 +26,7 @@
 
 
 an.aws.markpoint.tech {
+    tls off
     root /wwwroot
     log stdout
     errors stdout
@@ -62,6 +63,8 @@ an.aws.markpoint.tech {
 app-eu.{{tmpl.domain}} {
     import login
     import back
+
+    tls off
 
 #    log / stdout
     proxy /ws http://{{tmpl.director_to}} {
