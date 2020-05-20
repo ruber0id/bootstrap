@@ -338,7 +338,7 @@ _nginx_cors_loc: |
   if ($request_method = 'POST') { {{ _nginx_cors_loc_common }} add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range'; }
   if ($request_method = 'GET') { {{ _nginx_cors_loc_common }} add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range'; }
 _nginx_base_vh: "{{ _nginx_listen + _nginx_ssl }}"  
-specific configurations
+#specific configurations
 _nginx_proxy_vh:
   - server_name {sd}.{{_domain}}
   - location / { {{_nginx_cors_loc }} proxy_pass http://u{sd}; }
