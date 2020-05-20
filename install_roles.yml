@@ -44,3 +44,7 @@
 - src: https://github.com/jdauphant/ansible-role-nginx
   version: master
   name: jdauphant.nginx
+
+- src: https://github.com/madiedinro/ansible-letsencrypt-wildcatd-dns-auto.git
+  version: master
+  name: dr.letsencrypt.wildcard.auto
