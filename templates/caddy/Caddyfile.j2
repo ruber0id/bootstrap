@@ -75,25 +75,3 @@ an.{{tmpl.domain}} {
     }
 }
 
-
-app-eu.{{tmpl.domain}} {
-    import login
-    import back
-
-#    log / stdout
-    proxy /ws http://{{tmpl.director_to}} {
-        websocket
-        transparent
-    }
-    proxy /api {{tmpl.director_to}} {
-        without /api
-        transparent
-    }
-    root /dashboard
-    rewrite {
-        if {path} not_starts_with /__login__ 
-        if {path} not_starts_with /ws
-        if {path} not_starts_with /api
-        to {path} {path}/ /index.html
-    }
-}
