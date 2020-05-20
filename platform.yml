@@ -259,6 +259,8 @@
         _facts_dict: 
           secret: "{{ s_jwt_secret }}"
         extra_env:
+          AWS_SECRET_ACCESS_KEY: "{{ ansible_env.AWS_SECRET_ACCESS_KEY }}"
+          AWS_ACCESS_KEY_ID: "{{ ansible_env.AWS_ACCESS_KEY_ID }}"
           ACME_AGREE: 'true'
           ENABLE_TELEMETRY: 'false'
           JWT_SECRET: "{{s_jwt_secret}}"
