@@ -27,8 +27,18 @@
 }
 
 
-http://an.aws.markpoint.tech,
-https://an.aws.markpoint.tech {
+(back) {
+    jwt {
+        path /
+        allow sub dr
+        allow sub admin
+    }
+    header / Cache-Control "no-cache, no-store, must-revalidate"
+    gzip
+}
+
+
+an.{{tmpl.domain}} {
     import cert
     root /wwwroot
     log stdout
@@ -54,11 +64,36 @@ https://an.aws.markpoint.tech {
     header / {
         -Pragma
         -Last-Modified
-        Cache-Control "public, max-age=7200"
+        Cache-Control "no-transform, max-age=7200"
         X-Content-Type-Options nosniff
     }
     proxy /wss http://{{tmpl.ws_to}} {
         transparent
         websocket 
+    }
+}
+
+
+
+app.{{tmpl.domain}} {
+    import cert
+    import login
+    import back
+
+#    log / stdout
+    proxy /ws http://{{tmpl.director_to}} {
+        websocket
+        transparent
+    }
+    proxy /api {{tmpl.director_to}} {
+        without /api
+        transparent
+    }
+    root /dashboard
+    rewrite {
+        if {path} not_starts_with /__login__ 
+        if {path} not_starts_with /ws
+        if {path} not_starts_with /api
+        to {path} {path}/ /index.html
     }
 }
