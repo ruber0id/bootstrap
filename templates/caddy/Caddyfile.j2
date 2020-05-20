@@ -29,6 +29,7 @@
 
 
 (back) {
+    tls off
     jwt {
         path /
         allow sub dr
@@ -75,8 +76,7 @@ an.{{tmpl.domain}} {
 }
 
 
-app.{{tmpl.domain}} {
-    import cert
+app-eu.{{tmpl.domain}} {
     import login
     import back
 

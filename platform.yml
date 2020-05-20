@@ -752,7 +752,7 @@
       vars:
         # labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
         container_lbls:
-          "caddy.address": "theia.{{_domain}}"
+          "caddy.address": "theia-eu.{{_domain}}"
           "caddy.targetport": "{{ports.theia.1}}"
 
         project_dir: /home/theia/project
