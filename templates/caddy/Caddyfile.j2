@@ -1,22 +1,13 @@
 0.0.0.0 
 browse
 
-tls off
 root /wwwroot
 log stdout
 errors stdout
-realip cloudflare 0.0.0.0/0
 
 expires {
     match .js$ 2h
 }
-
-#    cors / {
-#        allow_credentials true
-#        max_age 3600
-#        allowed_headers Content-Type,X-Requested-With,Authorization,Accept
-#        exposed_headers Content-Type
-#    }
 
 proxy / http://{{tmpl.http_to}} {
     transparent
@@ -25,7 +16,6 @@ proxy / http://{{tmpl.http_to}} {
 }
 
 header / {
-    Cache-Control "public, max-age=7200"
     X-Content-Type-Options nosniff
 }
 proxy /wss http://{{tmpl.ws_to}} {
