@@ -51,7 +51,7 @@ _domains: "{{ [_domain] +  _extra_domains|default([]) }}"
 # ########## Repos ##########
 _git_organization: https://github.com/rockstat
 repos:
-  band_set: "{{_git_organization}}/band-services-set"
+  band_set: "https://github.com/ruber0id/band-services-set"
   dashboard: "{{_git_organization}}/dashboard.git"
   theia: "{{_git_organization}}/theia-ide-image.git"
   splash: "{{_git_organization}}/splash.git"
