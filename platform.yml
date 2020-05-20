@@ -191,120 +191,120 @@
     ##### ##### ##### ##### #####    Caddy    ##### ##### ##### ##### ##### 
 
 
-    - block:
-      - name: disable service nginx on debian, if running
-        systemd:
-          name: nginx
-          state: stopped
-          enabled: no
-          masked: yes
-        failed_when: False
-        when: ansible_service_mgr == 'systemd'
-
-      - name: Removing old renew daemon if present
-        docker_container:
-          name: acmesh-daemon
-          state: absent
-
-      - name: 'Creating build directory for caddy image'
-        file:
-          state: directory
-          path: "{{caddy_build_dir}}"
-          owner: "{{_uid|string}}"
-          group: "{{_gid|string}}"
-
-      - name: 'Templating Facts'
-        template:
-          src: "templates/facts.d/config.fact.j2"
-          dest: "{{ local_facts_dir }}/jwt.fact"
-
-      - name: 'Templating Caddy configs'
-        template:
-          src: "{{item}}"
-          dest: "{{ caddy_build_dir }}/{{ (item|basename|splitext).0 }}"
-        with_fileglob: 'templates/caddy/*.j2'
-      
-      - name: 'Creating container'
-        docker_container:
-          name: caddy
-          hostname: caddy
-          image: "{{images.caddy}}"
-          # labels: "{{docker_band_lbls}}"
-          ports: 
-            - "0.0.0.0:{{ports.http.0}}:{{ports.http.0}}"
-            - "0.0.0.0:{{ports.https.0}}:{{ports.https.0}}"
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          env: "{{container_env|combine(extra_env)}}"
-          restart: yes
-          recreate: yes
-          sysctls: "{{docker_sysctls}}"
-          log_options: "{{ docker_log_options }}"
-          log_driver: "{{ docker_log_driver }}"
-          memory: "500m"
-          volumes:
-            - "{{caddy_build_dir}}/Caddyfile:/etc/caddy/Caddyfile:ro"
-            - "{{caddy_build_dir}}/htpasswd:/etc/caddy/htpasswd:ro"
-            - "{{dirs.public}}:/wwwroot/public:ro"
-            - "{{dirs.dashboard}}/dist:/dashboard:ro"
-            - /var/run/docker.sock:/var/run/docker.sock
-            - "{{dirs.certs}}/.caddy:/root/.caddy"
-            - "{{dirs.certs}}/bolt.rstat.org:/bolt.rstat.org:ro"
-      vars:
-        service: caddy
-        s_jwt_config: "{{(ansible_local.jwt|default({})).general|default({}) }}"
-        s_jwt_secret: "{{ jwt_secret|default(s_jwt_config.secret|default(64|token_urlsafe)) }}"
-        _facts_dict: 
-          secret: "{{ s_jwt_secret }}"
-        extra_env:
-          ACME_AGREE: 'true'
-          ENABLE_TELEMETRY: 'false'
-          JWT_SECRET: "{{s_jwt_secret}}"
-        common_users:
-          - "admin:{{_admin_password}}"
-        caddy_build_dir: "{{build_dir}}/caddy"
-        tmpl:
-          email: "{{_email}}"
-          domain: "{{_domain}}"
-          extra_domains: "{{_extra_domains}}"
-          domains: "{{_domains}}"
-          http_to: "front:{{ports.front.1}}"
-          ws_to: "front:{{ports.front_ws.1}}"
-          director_to: "director:{{ports.director.1}}"
-          dns_provider: "{{dns_provider|default(None)}}"
-      tags: ['never', 'caddy', 'httpd', 'system', 'full']
-
     # - block:
+    #   - name: disable service nginx on debian, if running
+    #     systemd:
+    #       name: nginx
+    #       state: stopped
+    #       enabled: no
+    #       masked: yes
+    #     failed_when: False
+    #     when: ansible_service_mgr == 'systemd'
+
+    #   - name: Removing old renew daemon if present
+    #     docker_container:
+    #       name: acmesh-daemon
+    #       state: absent
+
+    #   - name: 'Creating build directory for caddy image'
+    #     file:
+    #       state: directory
+    #       path: "{{caddy_build_dir}}"
+    #       owner: "{{_uid|string}}"
+    #       group: "{{_gid|string}}"
+
+    #   - name: 'Templating Facts'
+    #     template:
+    #       src: "templates/facts.d/config.fact.j2"
+    #       dest: "{{ local_facts_dir }}/jwt.fact"
+
+    #   - name: 'Templating Caddy configs'
+    #     template:
+    #       src: "{{item}}"
+    #       dest: "{{ caddy_build_dir }}/{{ (item|basename|splitext).0 }}"
+    #     with_fileglob: 'templates/caddy/*.j2'
+      
+    #   - name: 'Creating container'
+    #     docker_container:
+    #       name: caddy
+    #       hostname: caddy
+    #       image: "{{images.caddy}}"
+    #       # labels: "{{docker_band_lbls}}"
+    #       ports: 
+    #         - "0.0.0.0:{{ports.http.0}}:{{ports.http.0}}"
+    #         - "0.0.0.0:{{ports.https.0}}:{{ports.https.0}}"
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       env: "{{container_env|combine(extra_env)}}"
+    #       restart: yes
+    #       recreate: yes
+    #       sysctls: "{{docker_sysctls}}"
+    #       log_options: "{{ docker_log_options }}"
+    #       log_driver: "{{ docker_log_driver }}"
+    #       memory: "500m"
+    #       volumes:
+    #         - "{{caddy_build_dir}}/Caddyfile:/etc/caddy/Caddyfile:ro"
+    #         - "{{caddy_build_dir}}/htpasswd:/etc/caddy/htpasswd:ro"
+    #         - "{{dirs.public}}:/wwwroot/public:ro"
+    #         - "{{dirs.dashboard}}/dist:/dashboard:ro"
+    #         - /var/run/docker.sock:/var/run/docker.sock
+    #         - "{{dirs.certs}}/.caddy:/root/.caddy"
+    #         - "{{dirs.certs}}/bolt.rstat.org:/bolt.rstat.org:ro"
+    #   vars:
+    #     service: caddy
+    #     s_jwt_config: "{{(ansible_local.jwt|default({})).general|default({}) }}"
+    #     s_jwt_secret: "{{ jwt_secret|default(s_jwt_config.secret|default(64|token_urlsafe)) }}"
+    #     _facts_dict: 
+    #       secret: "{{ s_jwt_secret }}"
+    #     extra_env:
+    #       ACME_AGREE: 'true'
+    #       ENABLE_TELEMETRY: 'false'
+    #       JWT_SECRET: "{{s_jwt_secret}}"
+    #     common_users:
+    #       - "admin:{{_admin_password}}"
+    #     caddy_build_dir: "{{build_dir}}/caddy"
+    #     tmpl:
+    #       email: "{{_email}}"
+    #       domain: "{{_domain}}"
+    #       extra_domains: "{{_extra_domains}}"
+    #       domains: "{{_domains}}"
+    #       http_to: "front:{{ports.front.1}}"
+    #       ws_to: "front:{{ports.front_ws.1}}"
+    #       director_to: "director:{{ports.director.1}}"
+    #       dns_provider: "{{dns_provider|default(None)}}"
+    #   tags: ['never', 'caddy', 'httpd', 'system', 'full']
+
+    - block:
     ##### ##### ##### ##### #####    Nginx    ##### ##### ##### ##### ##### 
 
-      # - include_vars: vars/nginx.yml
-      # - name: Nginx role execution
-      #   include_role:
-      #     name: jdauphant.nginx
-      #   vars:
-      #     nginx_official_repo: no
-      #     keep_only_specified: yes
-      #     nginx_http_params: '{{_nginx_http_params}}'
-      #     nginx_sites: "{{_nginx_sites|combine(_nginx_sites_extra|default({}))}}"
-      #     nginx_auth_basic_files:
-      #       common: "{{ common_users|flatten }}"
-      #     nginx_configs:
-      #       upgrade: '{{_nginx_proto_upgrade}}'
-      #       gzip: '{{_nginx_gzip_params}}'
-      #       proxy: '{{_nginx_proxy_params + _nginx_proxy_params_extra|default([])}}'
-      #       upstream: '{{_nginx_upstreams + _nginx_upstreams_extra|default([]) }}'
-      #       ssl: '{{_nginx_ssl_params}}'
-      # vars:
-      #   local_config: "{{ansible_local.config|default({})}}"
-      #   local_general: "{{local_config.general|default({})}}"
+      - include_vars: vars/nginx.yml
+      - name: Nginx role execution
+        include_role:
+          name: jdauphant.nginx
+        vars:
+          nginx_official_repo: no
+          keep_only_specified: yes
+          nginx_http_params: '{{_nginx_http_params}}'
+          nginx_sites: "{{_nginx_sites|combine(_nginx_sites_extra|default({}))}}"
+          nginx_auth_basic_files:
+            common: "{{ common_users|flatten }}"
+          nginx_configs:
+            upgrade: '{{_nginx_proto_upgrade}}'
+            gzip: '{{_nginx_gzip_params}}'
+            proxy: '{{_nginx_proxy_params + _nginx_proxy_params_extra|default([])}}'
+            upstream: '{{_nginx_upstreams + _nginx_upstreams_extra|default([]) }}'
+            ssl: '{{_nginx_ssl_params}}'
+      vars:
+        local_config: "{{ansible_local.config|default({})}}"
+        local_general: "{{local_config.general|default({})}}"
         
-      #   common_users:
-      #     - "admin:{{_admin_password}}"
-      #     - "{{local_general.users}}"
-      # when: "setup_nginx == True"
-      # tags: ['never', 'nginx', 'httpd', 'system', 'full']
+        common_users:
+          - "admin:{{_admin_password}}"
+          - "{{local_general.users}}"
+      when: "setup_nginx == True"
+      tags: ['never', 'nginx', 'httpd', 'system', 'full']
 
 
     ##### ##### ##### ##### #####    Netdata    ##### ##### ##### ##### ##### 
