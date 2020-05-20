@@ -714,53 +714,53 @@
 
 
     ##### ##### ##### ##### #####    Theia    ##### ##### ##### ##### ##### 
-    - block:
+    # - block:
 
-      - name: Fix workspace permissions
-        command: "chown -R {{_uid}}:{{_gid}} {{dirs.workspace}}"
-        args:
-          warn: False
+    #   - name: Fix workspace permissions
+    #     command: "chown -R {{_uid}}:{{_gid}} {{dirs.workspace}}"
+    #     args:
+    #       warn: False
       
-      - name: Starting container for service Theia
-        docker_container:
-          name: theia
-          hostname: theia
-          image: "{{images.theia}}"
-          labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
-          ports: [ "{{if_inner}}:{{ports.theia.0}}:{{ports.theia.1}}" ]
-          networks: [ { name: "{{docker_net_name}}" } ]
-          etc_hosts: "{{etc_hosts}}"
-          env: "{{ container_env }}"
-          restart_policy: "{{_restart_policy}}"
-          pull: yes
-          restart: yes
-          recreate: yes
-          memory: "1g"
-          volumes:
-            - "{{dirs.workspace}}:{{project_dir}}:cached"
-            - "{{dirs.user_images}}:{{project_dir}}/images:cached"
-            - "{{dirs.user_libraries}}:{{project_dir}}/libraries:cached"
-            - "{{dirs.public}}:{{project_dir}}/public:cached"
-            - "{{dirs.shared}}:{{project_dir}}/shared:cached"
-            - "{{dirs.notebooks}}:{{project_dir}}/notebooks:cached"
-            - "{{dirs.chwriter_custom_migrations}}:{{project_dir}}/config/migrations:cached"
-            - "{{dirs.band_set}}:{{project_dir}}/sources_ro/band_set:ro"
-            - "{{dirs.band_set}}/__skeletons:{{project_dir}}/sources_ro/skeletons:ro"
-            - "{{dirs.chwriter_custom_config}}:{{custom_config_dir}}/chwriter:cached"
-            - "{{dirs.front_custom_config}}:{{custom_config_dir}}/front:cached"
-            - "{{dirs.environments}}:{{config_dir}}/environments:cached"
-      vars:
-        # labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
-        container_lbls:
-          "caddy.address": "theia-eu.{{_domain}}"
-          "caddy.targetport": "{{ports.theia.1}}"
+    #   - name: Starting container for service Theia
+    #     docker_container:
+    #       name: theia
+    #       hostname: theia
+    #       image: "{{images.theia}}"
+    #       labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
+    #       ports: [ "{{if_inner}}:{{ports.theia.0}}:{{ports.theia.1}}" ]
+    #       networks: [ { name: "{{docker_net_name}}" } ]
+    #       etc_hosts: "{{etc_hosts}}"
+    #       env: "{{ container_env }}"
+    #       restart_policy: "{{_restart_policy}}"
+    #       pull: yes
+    #       restart: yes
+    #       recreate: yes
+    #       memory: "1g"
+    #       volumes:
+    #         - "{{dirs.workspace}}:{{project_dir}}:cached"
+    #         - "{{dirs.user_images}}:{{project_dir}}/images:cached"
+    #         - "{{dirs.user_libraries}}:{{project_dir}}/libraries:cached"
+    #         - "{{dirs.public}}:{{project_dir}}/public:cached"
+    #         - "{{dirs.shared}}:{{project_dir}}/shared:cached"
+    #         - "{{dirs.notebooks}}:{{project_dir}}/notebooks:cached"
+    #         - "{{dirs.chwriter_custom_migrations}}:{{project_dir}}/config/migrations:cached"
+    #         - "{{dirs.band_set}}:{{project_dir}}/sources_ro/band_set:ro"
+    #         - "{{dirs.band_set}}/__skeletons:{{project_dir}}/sources_ro/skeletons:ro"
+    #         - "{{dirs.chwriter_custom_config}}:{{custom_config_dir}}/chwriter:cached"
+    #         - "{{dirs.front_custom_config}}:{{custom_config_dir}}/front:cached"
+    #         - "{{dirs.environments}}:{{config_dir}}/environments:cached"
+    #   vars:
+    #     # labels: "{{container_lbls|combine(docker_band_lbls, _caddy_container_lbls)}}"
+    #     container_lbls:
+    #       "caddy.address": "theia-eu.{{_domain}}"
+    #       "caddy.targetport": "{{ports.theia.1}}"
 
-        project_dir: /home/theia/project
-        config_dir: "{{project_dir}}/config"
-        custom_config_dir: "{{config_dir}}/custom"
-        service: theia
-      when: 'setup_theia == True'
-      tags: ['theia', 'platform', 'pservice', 'band', 'docker-container', 'full']
+    #     project_dir: /home/theia/project
+    #     config_dir: "{{project_dir}}/config"
+    #     custom_config_dir: "{{config_dir}}/custom"
+    #     service: theia
+    #   when: 'setup_theia == True'
+    #   tags: ['theia', 'platform', 'pservice', 'band', 'docker-container', 'full']
 
 
     ##### ##### ##### ##### #####    VPN Server    ##### ##### ##### ##### ##### 
