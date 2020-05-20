@@ -276,9 +276,9 @@
     #       dns_provider: "{{dns_provider|default(None)}}"
     #   tags: ['never', 'caddy', 'httpd', 'system', 'full']
 
-    - block:
     ##### ##### ##### ##### #####    Nginx    ##### ##### ##### ##### ##### 
-
+    - block:
+      
       - include_vars: vars/nginx.yml
       - name: Nginx role execution
         include_role:
