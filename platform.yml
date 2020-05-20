@@ -156,37 +156,37 @@
 
 
 
-    # - block:
-        # - name: LetsEncrypt role execution
-        #   include_role:
-        #     name: dr.letsencrypt.wildcard.auto
-        #   vars:
-        #     _r_domain: "{{_domain}}"
-        #     _r_subdomains: "{{_subdomains}}"
-        #     _r_webroot: "{{dirs.well_known}}"
-        #     _r_force: "{{ssl_force|default(False)|bool}}"
-        #     _r_wildcard: "{{_ssl_wildcard}}"
-        #     _r_docker_networks: [ { name: "{{docker_net_name}}" } ]
-        #     _r_docker_labels: "{{ {}|combine(labels, docker_band_lbls) }}"
-        #     _r_check_addr: "{{if_inner}}:{{ports.http.0}}"
-        #     _r_bind_addr: "{{if_inner}}:{{ports.letsencrypt.0}}"
-        #     _r_cert_root: "{{dirs.certs}}"
-        #     _r_dns_provider: "{{_ssl_dns_provider|default('dns_acmedns')}}" 
-        #     _r_dns_envs: "{{_ssl_dns_envs|default({})}}"
-        #     _r_debug: yes
-        #     _r_log: no
+    - block:
+        - name: LetsEncrypt role execution
+          include_role:
+            name: dr.letsencrypt.wildcard.auto
+          vars:
+            _r_domain: "{{_domain}}"
+            _r_subdomains: "{{_subdomains}}"
+            _r_webroot: "{{dirs.well_known}}"
+            _r_force: "{{ssl_force|default(False)|bool}}"
+            _r_wildcard: "{{_ssl_wildcard}}"
+            _r_docker_networks: [ { name: "{{docker_net_name}}" } ]
+            _r_docker_labels: "{{ {}|combine(labels, docker_band_lbls) }}"
+            _r_check_addr: "{{if_inner}}:{{ports.http.0}}"
+            _r_bind_addr: "{{if_inner}}:{{ports.letsencrypt.0}}"
+            _r_cert_root: "{{dirs.certs}}"
+            _r_dns_provider: "{{_ssl_dns_provider|default('dns_acmedns')}}" 
+            _r_dns_envs: "{{_ssl_dns_envs|default({})}}"
+            _r_debug: yes
+            _r_log: no
 
-      #   - shell: nginx -t && nginx -s reload || /bin/true
+        - shell: nginx -t && nginx -s reload || /bin/true
 
-      # vars:
-      #   oldloc: "/etc/letsencrypt/live/{{_domain}}"
-      #   labels:
-      #     band.service.title: "SSL Renewer"
-    #   #     band.service.def_position: "0x6"
+      vars:
+        oldloc: "/etc/letsencrypt/live/{{_domain}}"
+        labels:
+          band.service.title: "SSL Renewer"
+      #     band.service.def_position: "0x6"
 
 
-    #   when: "_setup_ssl == True"
-    #   tags: ['never', 'full', 'system', 'ssl']
+      when: "_setup_ssl == True"
+      tags: ['never', 'full', 'system', 'ssl']
 
     ##### ##### ##### ##### #####    Caddy    ##### ##### ##### ##### ##### 
 
