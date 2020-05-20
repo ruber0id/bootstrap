@@ -1,47 +1,8 @@
-(cert) {
-    tls {{tmpl.email}} {# {
-        {{ tmpl.dns_provider|ternary('dns ' + tmpl.dns_provider, '') }}
-        {{ tmpl.caddy_wildcard|default(False)|ternary('wildcard', '') }}
-    } #}
-
-}
-
-(cert_h11) {
-    tls {
-        alpn http1.1
+http://*.aws.markpoint.tech,
+https://*.aws.markpoint.tech {
+    tls {{tmpl.email}} {
+        dns route53
     }
-}
-
-
-
-(login) {
-    login {
-        success_url /
-        jwt_expiry 720h
-        cookie_http_only true
-        cookie_expiry 2400h
-        redirect_check_referer false
-        htpasswd file=/etc/caddy/htpasswd
-        login-path /__login__
-        template /etc/caddy/form.html
-        cookie-domain ".{{tmpl.domain}}"
-    }
-}
-
-
-(back) {
-    jwt {
-        path /
-        allow sub dr
-        allow sub admin
-    }
-    header / Cache-Control "no-cache, no-store, must-revalidate"
-    gzip
-}
-
-
-{{ tmpl.domain }} {% for d in tmpl.extra_domains %}, {{d}}{% endfor %} {
-    import cert
     root /wwwroot
     log stdout
     errors stdout
@@ -64,29 +25,5 @@
     proxy /wss http://{{tmpl.ws_to}} {
         transparent
         websocket 
-    }
-}
-
-
-app.{{tmpl.domain}} {
-    import cert
-    import login
-    import back
-
-#    log / stdout
-    proxy /ws http://{{tmpl.director_to}} {
-        websocket
-        transparent
-    }
-    proxy /api {{tmpl.director_to}} {
-        without /api
-        transparent
-    }
-    root /dashboard
-    rewrite {
-        if {path} not_starts_with /__login__ 
-        if {path} not_starts_with /ws
-        if {path} not_starts_with /api
-        to {path} {path}/ /index.html
     }
 }
