@@ -302,11 +302,11 @@ common_env: "{{_common_env|combine(_common_env_extra|default({}))}}"
 container_env: "{{ {}|combine( common_env, _containers_env[service]|default({}), _containers_env_extra[service]|default({}) ) }}"
 
 # ########## CADDY COMMONS ##########
-# _caddy_container_lbls:
-#   "caddy.targetprotocol": "http"
-#   "caddy.import": "back"
-#   "caddy.proxy.websocket": "{{'{{nil}}'}}"
-#   "caddy.proxy.transparent": "{{'{{nil}}'}}"
+_caddy_container_lbls:
+  "caddy.targetprotocol": "http"
+  "caddy.import": "back"
+  "caddy.proxy.websocket": "{{'{{nil}}'}}"
+  "caddy.proxy.transparent": "{{'{{nil}}'}}"
 
 # # ########## NGINX COMMONS ##########
 # #common blocks
