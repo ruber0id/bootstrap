@@ -1,41 +1,15 @@
+0.0.0.0 
+browse
 
-(login) {
-    login {
-        success_url /
-        jwt_expiry 720h
-        cookie_http_only true
-        cookie_expiry 2400h
-        redirect_check_referer false
-        htpasswd file=/etc/caddy/htpasswd
-        login-path /__login__
-        template /etc/caddy/form.html
-        cookie-domain ".{{tmpl.domain}}"
-    }
+tls off
+root /wwwroot
+log stdout
+errors stdout
+realip cloudflare 0.0.0.0/0
+
+expires {
+    match .js$ 2h
 }
-
-
-(back) {
-    tls off
-    jwt {
-        path /
-        allow sub dr
-        allow sub admin
-    }
-    header / Cache-Control "no-cache, no-store, must-revalidate"
-    gzip
-}
-
-
-0.0.0.0 {
-    tls off
-    root /wwwroot
-    log stdout
-    errors stdout
-    realip cloudflare 0.0.0.0/0
-
-    expires {
-        match .js$ 2h
-    }
 
 #    cors / {
 #        allow_credentials true
@@ -44,42 +18,18 @@
 #        exposed_headers Content-Type
 #    }
 
-    proxy / http://{{tmpl.http_to}} {
-        transparent
-        header_upstream Origin {>Origin}
-        except /public /wss
-    }
-
-    header / {
-        Cache-Control "public, max-age=7200"
-        X-Content-Type-Options nosniff
-    }
-    proxy /wss http://{{tmpl.ws_to}} {
-        transparent
-        websocket 
-    }
+proxy / http://{{tmpl.http_to}} {
+    transparent
+    header_upstream Origin {>Origin}
+    except /public /wss
 }
 
-
-app-eu.markpoint.tech {
-    import login
-    import back
-
-#    log / stdout
-    proxy /ws http://{{tmpl.director_to}} {
-        websocket
-        transparent
-    }
-    proxy /api {{tmpl.director_to}} {
-        without /api
-        transparent
-    }
-    root /dashboard
-    rewrite {
-        if {path} not_starts_with /__login__ 
-        if {path} not_starts_with /ws
-        if {path} not_starts_with /api
-        to {path} {path}/ /index.html
-    }
+header / {
+    Cache-Control "public, max-age=7200"
+    X-Content-Type-Options nosniff
+}
+proxy /wss http://{{tmpl.ws_to}} {
+    transparent
+    websocket 
 }
 
