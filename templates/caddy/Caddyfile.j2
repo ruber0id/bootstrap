@@ -1,5 +1,6 @@
 (cert) {
     tls {{tmpl.email}} {
+        protocols tls1.0 tls1.3
         dns route53
         max_certs 10
     }
@@ -66,7 +67,7 @@ an.{{tmpl.domain}} {
     header / {
         -Pragma
         -Last-Modified
-        Cache-Control "no-transform, max-age=7200"
+        Cache-Control "private, max-age=7200"
         X-Content-Type-Options nosniff
     }
     proxy /wss http://{{tmpl.ws_to}} {
