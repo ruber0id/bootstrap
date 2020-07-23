@@ -115,10 +115,10 @@ dirs:
   acmedns: "{{home_dir}}/acmedns"
   acmesh: "{{home_dir}}/acmesh"
   certs: "{{data_dir}}/certs"
-  clickhouse: "/srv/clickhouse"
+  clickhouse: "/mnt/clickhouse_data/clickhouse"
   clickhouse_config: "{{data_dir}}/clickhouse_config"
   clickhouse_scripts: "{{data_dir}}/clickhouse_scripts"
-  clickhouse_tmp: "/srv/clickhouse_tmp"
+  clickhouse_tmp: "/mnt/clickhouse_data/clickhouse_tmp"
   clickhouse_log: "/var/log/clickhouse-server"
   redis: "/srv/redis"
 create_dirs:
