@@ -2,7 +2,7 @@
     tls {{tmpl.email}} {
         protocols tls1.0 tls1.3
         dns route53
-        max_certs 10
+#       max_certs 10
     }
 }
 
@@ -41,10 +41,10 @@
 }
 
 
-an.{{tmpl.domain}} {
+{{tmpl.domain}} {
     import cert
     root /wwwroot
-    log stdout
+#   log stdout
     errors stdout
     realip 0.0.0.0/0
     expires {
