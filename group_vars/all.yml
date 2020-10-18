@@ -60,7 +60,7 @@ _images:
   band: "rockstat/band-base-py:{{ (branch == 'master')|ternary('3.7', '3.7-' + branch) }}"
   director: "rockstat/director:{{_tag}}"
   caddy: "rockstat/caddy"
-  front: "rockstat/front:{{_tag}}"
+  front: "ruber0id/front:{{_tag}}"
   chwriter: "rockstat/chwriter:{{_tag}}"
   ebaloger: rockstat/ebaloger
   theia: "rockstat/theia-ide:{{_tag}}"
