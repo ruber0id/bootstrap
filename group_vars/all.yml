@@ -60,7 +60,7 @@ _images:
   band: "rockstat/band-base-py:dev"
   director: "rockstat/director:dev"
   caddy: "rockstat/caddy"
-  front: "rockstat/front:dev"
+  front: "ruber0id/front:latest"
   chwriter: "rockstat/chwriter:dev"
   ebaloger: rockstat/ebaloger
   theia: "rockstat/theia-ide:dev"
